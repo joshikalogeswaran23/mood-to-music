@@ -4,7 +4,7 @@ import pandas as pd
 
 
 # ============================================================
-# PAGE CONFIG
+# PAGE CONFIGURATION
 # ============================================================
 
 st.set_page_config(
@@ -20,7 +20,6 @@ st.set_page_config(
 
 @st.cache_resource
 def load_emotion_model():
-
     return pipeline(
         "text-classification",
         model="j-hartmann/emotion-english-distilroberta-base"
@@ -41,19 +40,12 @@ def detect_emotion(text):
     confidence = result["score"] * 100
 
     emotion_map = {
-
         "anger": "Angry",
-
         "disgust": "Angry",
-
         "fear": "Stressed",
-
         "joy": "Happy",
-
         "sadness": "Sad",
-
         "surprise": "Excited",
-
         "neutral": "Neutral"
     }
 
@@ -72,39 +64,27 @@ def detect_emotion(text):
 emotion_emojis = {
 
     "Happy": "😊",
-
     "Sad": "😢",
-
     "Stressed": "😰",
-
     "Angry": "😡",
-
     "Excited": "🤩",
-
     "Neutral": "😐",
 
     "Calm": "😌",
-
     "Energetic": "⚡",
-
     "Focus": "🎯",
-
     "Motivation": "💪",
-
     "Sleep": "😴",
-
     "Romantic": "❤️",
-
     "Party": "🎉"
 }
 
 
 # ============================================================
-# CUSTOM TAMIL + ENGLISH MUSIC DATABASE
+# MUSIC DATABASE
 # ============================================================
 
 songs = {
-
 
     # ========================================================
     # CALM
@@ -224,7 +204,7 @@ songs = {
 
 
     # ========================================================
-    # FOCUS / STUDY
+    # FOCUS
     # ========================================================
 
     "Focus": [
@@ -393,8 +373,8 @@ songs = {
 
         {
             "name": "Kanimaa",
-            "artist": "Santhosh Narayanan & The Indian Choral Ensemble",
-            "url": "https://www.youtube.com/results?search_query=Kanimaa+Santhosh+Narayanan+Retro"
+            "artist": "Santhosh Narayanan",
+            "url": "https://www.youtube.com/results?search_query=Kanimaa+Santhosh+Narayanan"
         },
 
         {
@@ -416,7 +396,6 @@ songs = {
         }
 
     ]
-
 }
 
 
@@ -427,64 +406,15 @@ songs = {
 target_moods = {
 
     "😌 Calm": "Calm",
-
     "😊 Happy": "Happy",
-
     "⚡ Energetic": "Energetic",
-
     "🎯 Focus / Study": "Focus",
-
     "💪 Motivation": "Motivation",
-
     "😴 Sleep": "Sleep",
-
     "❤️ Romantic": "Romantic",
-
     "🎉 Party / Fun": "Party"
 
 }
-
-
-# ============================================================
-# SMART MUSIC RECOMMENDATION
-# ============================================================
-
-def recommend_category(
-    current_emotion,
-    desired_mood
-):
-
-    if (
-        current_emotion == "Stressed"
-        and desired_mood == "Calm"
-    ):
-        return "Calm"
-
-    if (
-        current_emotion == "Sad"
-        and desired_mood == "Happy"
-    ):
-        return "Happy"
-
-    if (
-        current_emotion == "Angry"
-        and desired_mood == "Calm"
-    ):
-        return "Calm"
-
-    if (
-        current_emotion == "Stressed"
-        and desired_mood == "Focus"
-    ):
-        return "Focus"
-
-    if (
-        current_emotion == "Sad"
-        and desired_mood == "Motivation"
-    ):
-        return "Motivation"
-
-    return desired_mood
 
 
 # ============================================================
@@ -492,47 +422,32 @@ def recommend_category(
 # ============================================================
 
 if "page" not in st.session_state:
-
     st.session_state.page = "Home"
 
+if "emotion" not in st.session_state:
+    st.session_state.emotion = None
+
+if "confidence" not in st.session_state:
+    st.session_state.confidence = None
+
+if "model_emotion" not in st.session_state:
+    st.session_state.model_emotion = None
+
+if "desired_mood" not in st.session_state:
+    st.session_state.desired_mood = None
+
+if "music_category" not in st.session_state:
+    st.session_state.music_category = None
 
 if "mood_history" not in st.session_state:
-
     st.session_state.mood_history = []
 
-
 if "feedback_history" not in st.session_state:
-
     st.session_state.feedback_history = []
 
 
-if "emotion" not in st.session_state:
-
-    st.session_state.emotion = None
-
-
-if "confidence" not in st.session_state:
-
-    st.session_state.confidence = None
-
-
-if "model_emotion" not in st.session_state:
-
-    st.session_state.model_emotion = None
-
-
-if "desired_mood" not in st.session_state:
-
-    st.session_state.desired_mood = None
-
-
-if "music_category" not in st.session_state:
-
-    st.session_state.music_category = None
-
-
 # ============================================================
-# SIDEBAR NAVIGATION
+# SIDEBAR — ALWAYS AVAILABLE
 # ============================================================
 
 with st.sidebar:
@@ -540,71 +455,59 @@ with st.sidebar:
     st.title("🎵 MoodLens AI")
 
     st.caption(
-        "Your emotions. "
-        "Your destination. "
-        "Your music."
+        "Your emotions → Your goal → Your music"
     )
 
     st.markdown("---")
 
-    st.subheader("Navigation")
-
+    st.subheader("🧭 Navigate")
 
     if st.button(
-        "🏠  Home",
+        "🏠 Home",
         use_container_width=True
     ):
-
         st.session_state.page = "Home"
-
+        st.rerun()
 
     if st.button(
-        "🧠  Analyze Mood",
+        "🧠 Analyze Mood",
         use_container_width=True
     ):
-
         st.session_state.page = "Analyze"
-
+        st.rerun()
 
     if st.button(
-        "🎯  Mood Goal",
+        "🎯 Mood Goal",
         use_container_width=True
     ):
-
         st.session_state.page = "Goal"
-
+        st.rerun()
 
     if st.button(
-        "🎵  My Music",
+        "🎵 My Music",
         use_container_width=True
     ):
-
         st.session_state.page = "Music"
-
+        st.rerun()
 
     if st.button(
-        "📊  Mood Journey",
+        "📊 Mood Journey",
         use_container_width=True
     ):
-
         st.session_state.page = "Journey"
-
+        st.rerun()
 
     if st.button(
-        "❤️  Feedback",
+        "❤️ Feedback",
         use_container_width=True
     ):
-
         st.session_state.page = "Feedback"
-
+        st.rerun()
 
     st.markdown("---")
 
-    st.caption("🤖 Powered by AI")
-
-    st.caption(
-        "🎧 Emotion-aware recommendation"
-    )
+    st.caption("🤖 AI-powered emotion detection")
+    st.caption("🎧 Personalized music discovery")
 
 
 # ============================================================
@@ -613,66 +516,65 @@ with st.sidebar:
 
 if st.session_state.page == "Home":
 
-    st.title("🎵 Welcome to MoodLens AI")
+    st.title("🎵 MoodLens AI")
 
     st.subheader(
         "🧠 Music that understands how you feel."
     )
 
     st.write(
-        "MoodLens AI uses artificial intelligence "
-        "to understand emotions from natural language "
-        "and recommend music based on the mood "
-        "you want to reach."
+        "MoodLens AI analyzes your emotions from "
+        "natural language and recommends music "
+        "based on how you want to feel."
     )
 
     st.markdown("---")
 
-
     col1, col2, col3 = st.columns(3)
-
 
     with col1:
 
         st.markdown("## 🧠")
 
-        st.write("### Understand")
+        st.subheader("Understand")
 
         st.write(
-            "Describe your day naturally "
-            "and let AI identify the emotion."
+            "Tell the AI what happened "
+            "and it detects your emotion."
         )
-
 
     with col2:
 
         st.markdown("## 🎯")
 
-        st.write("### Choose")
+        st.subheader("Choose")
 
         st.write(
-            "Choose how you want to feel."
+            "Choose the emotional state "
+            "you want to reach."
         )
-
 
     with col3:
 
         st.markdown("## 🎵")
 
-        st.write("### Transform")
+        st.subheader("Transform")
 
         st.write(
-            "Receive music recommendations "
-            "for your emotional goal."
+            "Get music recommendations "
+            "designed for your destination."
         )
-
 
     st.markdown("---")
 
-    st.info(
-        "💡 Start by clicking "
-        "**🧠 Analyze Mood** from the sidebar."
-    )
+    if st.button(
+        "🚀 Start My Mood Journey",
+        use_container_width=True
+    ):
+
+        st.session_state.page = "Analyze"
+
+        st.rerun()
 
 
 # ============================================================
@@ -684,25 +586,21 @@ elif st.session_state.page == "Analyze":
     st.title("🧠 Analyze Your Mood")
 
     st.write(
-        "Tell us what happened today. "
-        "You don't need to select an emotion."
+        "Tell me about your day or describe "
+        "what you are feeling."
     )
-
 
     user_text = st.text_area(
 
-        "💭 Tell me about your day",
+        "💭 What's happening?",
 
         placeholder=(
             "Example: I have an exam tomorrow "
-            "and I'm really nervous. "
-            "I keep worrying about whether "
-            "I will pass."
+            "and I am really nervous."
         ),
 
         height=180
     )
-
 
     if st.button(
         "🔍 Analyze My Emotion",
@@ -712,13 +610,13 @@ elif st.session_state.page == "Analyze":
         if not user_text.strip():
 
             st.warning(
-                "⚠️ Please describe how you are feeling."
+                "⚠️ Please tell me something about your day."
             )
 
         else:
 
             with st.spinner(
-                "🤖 AI is analyzing your emotions..."
+                "🤖 AI is understanding your emotion..."
             ):
 
                 (
@@ -727,75 +625,51 @@ elif st.session_state.page == "Analyze":
                     model_emotion
                 ) = detect_emotion(user_text)
 
-
             st.session_state.emotion = emotion
-
             st.session_state.confidence = confidence
-
             st.session_state.model_emotion = model_emotion
 
-
             st.success(
-                "✅ Emotion analysis completed!"
+                "✅ Emotion detected!"
             )
 
+            st.markdown("---")
 
-    if st.session_state.emotion:
+            st.subheader("🧠 AI Emotion Analysis")
 
-        st.markdown("---")
+            col1, col2 = st.columns(2)
 
-        st.subheader("🤖 AI Result")
+            with col1:
 
+                st.metric(
+                    "Detected Emotion",
+                    f"{emotion_emojis.get(emotion, '🧠')} {emotion}"
+                )
 
-        col1, col2 = st.columns(2)
+            with col2:
 
+                st.metric(
+                    "AI Confidence",
+                    f"{confidence:.1f}%"
+                )
 
-        with col1:
-
-            st.metric(
-
-                "Detected Emotion",
-
-                f"{emotion_emojis.get(
-                    st.session_state.emotion,
-                    '🧠'
-                )} "
-                f"{st.session_state.emotion}"
+            st.progress(
+                min(confidence / 100, 1.0)
             )
 
-
-        with col2:
-
-            st.metric(
-
-                "AI Confidence",
-
-                f"{st.session_state.confidence:.1f}%"
+            st.write(
+                f"AI classification: **{model_emotion}**"
             )
 
+            st.markdown("---")
 
-        st.progress(
-
-            min(
-                st.session_state.confidence / 100,
-                1
+            st.info(
+                "🎯 Moving to Mood Goal..."
             )
-        )
 
+            st.session_state.page = "Goal"
 
-        st.write(
-
-            "AI classification: "
-            f"**{st.session_state.model_emotion}**"
-        )
-
-
-        st.info(
-
-            "🎯 Next step: go to "
-            "**Mood Goal** and choose "
-            "how you want to feel."
-        )
+            st.rerun()
 
 
 # ============================================================
@@ -806,39 +680,32 @@ elif st.session_state.page == "Goal":
 
     st.title("🎯 Choose Your Mood Goal")
 
-
     if not st.session_state.emotion:
 
         st.warning(
-            "⚠️ Analyze your mood first."
+            "⚠️ No emotion has been analyzed yet."
         )
 
-        st.info(
-            "Go to **🧠 Analyze Mood** "
-            "from the sidebar."
-        )
+        if st.button(
+            "🧠 Go to Analyze Mood",
+            use_container_width=True
+        ):
 
+            st.session_state.page = "Analyze"
+
+            st.rerun()
 
     else:
 
-        current_emotion = (
-            st.session_state.emotion
-        )
-
+        current_emotion = st.session_state.emotion
 
         st.write(
-
-            "Your current AI-detected mood is "
-            f"**{emotion_emojis.get(
-                current_emotion,
-                '🧠'
-            )} "
-            f"{current_emotion}**."
+            f"Current emotion: "
+            f"**{emotion_emojis.get(current_emotion, '🧠')} "
+            f"{current_emotion}**"
         )
 
-
         st.markdown("---")
-
 
         selected_target = st.selectbox(
 
@@ -847,68 +714,39 @@ elif st.session_state.page == "Goal":
             list(target_moods.keys())
         )
 
+        desired_mood = target_moods[selected_target]
 
-        desired_mood = target_moods[
-            selected_target
-        ]
-
-
-        st.session_state.desired_mood = (
-            desired_mood
-        )
-
+        st.session_state.desired_mood = desired_mood
 
         st.markdown("---")
-
 
         st.subheader(
             "🧭 Your Mood Journey"
         )
 
-
         st.success(
 
-            f"{emotion_emojis.get(
-                current_emotion,
-                '🧠'
-            )} "
-            f"**{current_emotion}**"
-            "   →   "
-            f"{emotion_emojis.get(
-                desired_mood,
-                '🎯'
-            )} "
-            f"**{desired_mood}**"
+            f"{emotion_emojis.get(current_emotion, '🧠')} "
+            f"{current_emotion}"
+
+            "  →  "
+
+            f"{emotion_emojis.get(desired_mood, '🎯')} "
+            f"{desired_mood}"
         )
 
-
         if st.button(
-
-            "🎵 Generate My Music",
-
+            "🎵 Create My Playlist",
             use_container_width=True
         ):
 
-            category = recommend_category(
+            st.session_state.music_category = desired_mood
 
-                current_emotion,
+            st.session_state.mood_history.append({
 
-                desired_mood
-            )
+                "Current Emotion": current_emotion,
 
-
-            st.session_state.music_category = (
-                category
-            )
-
-
-            history_entry = {
-
-                "Current Emotion":
-                    current_emotion,
-
-                "Target Mood":
-                    desired_mood,
+                "Target Mood": desired_mood,
 
                 "AI Confidence":
                     round(
@@ -916,28 +754,17 @@ elif st.session_state.page == "Goal":
                         1
                     ),
 
-                "Music Category":
-                    category
-            }
+                "Music Category": desired_mood
 
-
-            st.session_state.mood_history.append(
-                history_entry
-            )
-
+            })
 
             st.success(
-
-                "🎵 Your personalized "
-                "music journey is ready!"
+                "🎵 Your playlist is ready!"
             )
 
+            st.session_state.page = "Music"
 
-            st.info(
-
-                "Go to **🎵 My Music** "
-                "from the sidebar."
-            )
+            st.rerun()
 
 
 # ============================================================
@@ -946,10 +773,7 @@ elif st.session_state.page == "Goal":
 
 elif st.session_state.page == "Music":
 
-    st.title(
-        "🎵 My Personalized Music"
-    )
-
+    st.title("🎵 My Personalized Music")
 
     if not st.session_state.music_category:
 
@@ -957,103 +781,66 @@ elif st.session_state.page == "Music":
             "⚠️ No playlist has been created yet."
         )
 
-        st.info(
+        if st.button(
+            "🎯 Choose Mood Goal",
+            use_container_width=True
+        ):
 
-            "Go to **🧠 Analyze Mood → "
-            "🎯 Mood Goal** to create "
-            "your playlist."
-        )
+            st.session_state.page = "Goal"
 
+            st.rerun()
 
     else:
 
-        category = (
-            st.session_state.music_category
-        )
+        category = st.session_state.music_category
 
+        current = st.session_state.emotion
 
-        desired = (
-            st.session_state.desired_mood
-        )
-
-
-        current = (
-            st.session_state.emotion
-        )
-
+        desired = st.session_state.desired_mood
 
         st.subheader(
 
-            f"🎧 Music for "
-            f"{emotion_emojis.get(
-                desired,
-                '🎯'
-            )} "
-            f"{desired}"
+            f"{emotion_emojis.get(desired, '🎵')} "
+            f"Music for {desired}"
         )
-
 
         st.write(
 
-            "Your journey: "
+            f"Your journey: "
 
-            f"{emotion_emojis.get(
-                current,
-                '🧠'
-            )} "
-
-            f"{current}"
+            f"{emotion_emojis.get(current, '🧠')} "
+            f"**{current}**"
 
             " → "
 
-            f"{emotion_emojis.get(
-                desired,
-                '🎯'
-            )} "
-
-            f"{desired}"
+            f"{emotion_emojis.get(desired, '🎯')} "
+            f"**{desired}**"
         )
-
 
         st.markdown("---")
 
-
-        for index, song in enumerate(
-
+        for number, song in enumerate(
             songs[category],
-
             1
         ):
 
             st.markdown(
-
-                f"### {index}. 🎵 "
-                f"{song['name']}"
+                f"### {number}. 🎵 {song['name']}"
             )
-
 
             st.write(
-
-                f"**Artist:** "
-                f"{song['artist']}"
+                f"**Artist:** {song['artist']}"
             )
 
-
             st.link_button(
-
                 "▶️ Play on YouTube",
-
                 song["url"]
             )
 
-
             st.markdown("---")
 
-
         st.success(
-
-            "🎧 Enjoy your personalized "
-            "music journey!"
+            "🎧 Enjoy your personalized music journey!"
         )
 
 
@@ -1063,87 +850,43 @@ elif st.session_state.page == "Music":
 
 elif st.session_state.page == "Journey":
 
-    st.title(
-        "📊 My Mood Journey"
-    )
-
+    st.title("📊 My Mood Journey")
 
     if not st.session_state.mood_history:
 
         st.info(
-
-            "Your mood history will appear "
-            "here after you create playlists."
+            "Your mood journey will appear here "
+            "after you create a playlist."
         )
-
 
     else:
 
         df = pd.DataFrame(
-
             st.session_state.mood_history
         )
 
-
         st.metric(
-
             "🎵 Total Sessions",
-
             len(df)
         )
 
-
         st.markdown("---")
-
 
         st.subheader(
             "📝 Session History"
         )
 
-
         st.dataframe(
-
             df,
-
             use_container_width=True,
-
             hide_index=True
         )
 
-
         st.markdown("---")
 
-
         st.subheader(
-            "📈 AI Confidence Over Sessions"
+            "🧭 Emotional Journeys"
         )
-
-
-        confidence_df = df[
-            ["AI Confidence"]
-        ]
-
-
-        confidence_df.index = [
-
-            f"Session {i + 1}"
-
-            for i in range(len(df))
-        ]
-
-
-        st.line_chart(
-            confidence_df
-        )
-
-
-        st.markdown("---")
-
-
-        st.subheader(
-            "🧭 Your Emotional Destinations"
-        )
-
 
         for index, row in df.iterrows():
 
@@ -1168,6 +911,27 @@ elif st.session_state.page == "Journey":
                 f"{row['Target Mood']}"
             )
 
+        st.markdown("---")
+
+        st.subheader(
+            "📈 AI Confidence"
+        )
+
+        confidence_df = df[
+            ["AI Confidence"]
+        ]
+
+        confidence_df.index = [
+
+            f"Session {i + 1}"
+
+            for i in range(len(df))
+        ]
+
+        st.line_chart(
+            confidence_df
+        )
+
 
 # ============================================================
 # FEEDBACK
@@ -1175,152 +939,101 @@ elif st.session_state.page == "Journey":
 
 elif st.session_state.page == "Feedback":
 
-    st.title(
-        "❤️ Music Feedback"
-    )
-
+    st.title("❤️ Music Feedback")
 
     st.write(
-
-        "Your feedback helps us understand "
-        "whether the recommendation matched "
-        "your emotional goal."
+        "Did the recommended music help you "
+        "reach your desired mood?"
     )
 
+    feedback = st.radio(
 
-    if not st.session_state.music_category:
+        "🎧 How did the music make you feel?",
 
-        st.info(
+        [
 
-            "Create a playlist first "
-            "to provide feedback."
+            "😊 Much better",
+
+            "🙂 Slightly better",
+
+            "😐 No change",
+
+            "😔 Worse"
+
+        ]
+    )
+
+    if st.button(
+        "💾 Submit Feedback",
+        use_container_width=True
+    ):
+
+        st.session_state.feedback_history.append(
+            feedback
         )
 
+        st.success(
+            f"❤️ Feedback recorded: {feedback}"
+        )
 
-    else:
+        if feedback == "😊 Much better":
 
-        feedback = st.radio(
+            st.balloons()
 
-            "🎧 How did the music make you feel?",
+            st.success(
+                "🎉 Great! The music matched your mood goal."
+            )
 
-            [
+        elif feedback == "🙂 Slightly better":
+
+            st.info(
+                "👍 Thanks! The recommendation helped a little."
+            )
+
+        elif feedback == "😐 No change":
+
+            st.info(
+                "😐 Thanks. We can improve the recommendations."
+            )
+
+        else:
+
+            st.warning(
+                "💭 Thanks for your honest feedback."
+            )
+
+    st.markdown("---")
+
+    if st.session_state.feedback_history:
+
+        total = len(
+            st.session_state.feedback_history
+        )
+
+        positive = sum(
+
+            1
+
+            for item in
+            st.session_state.feedback_history
+
+            if item in [
 
                 "😊 Much better",
 
-                "🙂 Slightly better",
+                "🙂 Slightly better"
 
-                "😐 No change",
-
-                "😔 Worse"
             ]
         )
 
+        rate = (
+            positive / total
+        ) * 100
 
-        if st.button(
-
-            "💾 Submit Feedback",
-
-            use_container_width=True
-        ):
-
-
-            st.session_state.feedback_history.append(
-
-                feedback
-            )
-
-
-            st.success(
-
-                f"❤️ Feedback recorded: "
-                f"{feedback}"
-            )
-
-
-            if feedback == "😊 Much better":
-
-                st.balloons()
-
-                st.success(
-
-                    "🎉 Great! The recommendation "
-                    "seems to have worked well for you."
-                )
-
-
-            elif feedback == "🙂 Slightly better":
-
-                st.info(
-
-                    "👍 Thanks! "
-                    "That's a positive response."
-                )
-
-
-            elif feedback == "😐 No change":
-
-                st.info(
-
-                    "😐 Thanks. "
-                    "This recommendation may need improvement."
-                )
-
-
-            else:
-
-                st.warning(
-
-                    "💭 Thanks for your honest feedback."
-                )
-
-
-        st.markdown("---")
-
-
-        if st.session_state.feedback_history:
-
-            total = len(
-
-                st.session_state.feedback_history
-            )
-
-
-            positive = sum(
-
-                1
-
-                for item in
-                st.session_state.feedback_history
-
-                if item in [
-
-                    "😊 Much better",
-
-                    "🙂 Slightly better"
-                ]
-            )
-
-
-            rate = (
-
-                positive / total
-
-            ) * 100
-
-
-            st.metric(
-
-                "📊 Positive Response Rate",
-
-                f"{rate:.0f}%"
-            )
-
-
-            st.write(
-
-                f"Based on {total} "
-                f"feedback response(s)."
-            )
+        st.metric(
+            "📊 Positive Response Rate",
+            f"{rate:.0f}%"
+        )
 
 
 # ============================================================
@@ -1330,8 +1043,6 @@ elif st.session_state.page == "Feedback":
 st.markdown("---")
 
 st.caption(
-
     "🎵 MoodLens AI | "
-    "AI-powered emotion-aware "
-    "music recommendation"
+    "Emotion-aware music recommendation"
 )
